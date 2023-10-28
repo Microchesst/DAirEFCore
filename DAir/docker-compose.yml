@@ -1,0 +1,28 @@
+﻿version: '3.4'
+
+services:
+  dair:
+    image: DAir.Web:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - sql1
+    ports:
+      - "8080:80"
+    networks:
+      - dairnetwork
+
+  sql1:
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      SA_PASSWORD: "BadMand120@"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - dairnetwork
+
+networks:
+  dairnetwork:
+    driver: bridge

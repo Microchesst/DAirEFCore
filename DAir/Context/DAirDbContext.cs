@@ -3,7 +3,7 @@ using DAir.Models;
 
 namespace DAir.Context
 {
-    public class DAirDbContext: DbContext
+    public class DAirDbContext : DbContext
     {
         // DbSet properties
         public DbSet<Employee> Employees { get; set; }
@@ -39,17 +39,21 @@ namespace DAir.Context
                 .WithOne(fs => fs.Employee)
                 .HasForeignKey(fs => fs.EmployeeID);
 
-            // Employee and Rating (as Rater)
-            modelBuilder.Entity<Employee>()
-                .HasMany(e => e.RatingsGiven)
-                .WithOne(r => r.Rater)
-                .HasForeignKey(r => r.RaterID);
+            // Rating configuration
+            modelBuilder.Entity<Rating>()
+                .HasKey(r => new { r.RaterID, r.RateeID });
 
-            // Pilot and Rating (as Ratee)
-            modelBuilder.Entity<Pilot>()
-                .HasMany(p => p.RatingsReceived)
-                .WithOne(r => r.Ratee)
-                .HasForeignKey(r => r.RateeID);
+            modelBuilder.Entity<Rating>()
+                .HasOne(r => r.Rater)
+                .WithMany(e => e.RatingsGiven)
+                .HasForeignKey(r => r.RaterID)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+            modelBuilder.Entity<Rating>()
+                .HasOne(r => r.Ratee)
+                .WithMany(p => p.RatingsReceived)
+                .HasForeignKey(r => r.RateeID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // CabinMember and Language
             modelBuilder.Entity<CabinMember>()
@@ -64,18 +68,38 @@ namespace DAir.Context
                 .HasForeignKey(fs => fs.FlightCode);
 
             // Crew and Employee (for different roles)
-            // Assuming Crew class has navigation properties for each role, e.g., PilotEmployee, CoPilotEmployee, etc.
             modelBuilder.Entity<Crew>()
                 .HasOne(c => c.PilotEmployee)
                 .WithMany()
-                .HasForeignKey(c => c.Pilot);
+                .HasForeignKey(c => c.Pilot)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Crew>()
                 .HasOne(c => c.CoPilotEmployee)
                 .WithMany()
-                .HasForeignKey(c => c.CoPilot);
+                .HasForeignKey(c => c.CoPilot)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // ... similar for Pursuer and FlightAttendant
+            modelBuilder.Entity<Crew>()
+                .HasOne(c => c.PursuerEmployee)
+                .WithMany()
+                .HasForeignKey(c => c.Pursuer)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Crew>()
+                .HasOne(c => c.FlightAttendantEmployee)
+                .WithMany()
+                .HasForeignKey(c => c.FlightAttendant)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Composite Key for FlightSchedule
+            modelBuilder.Entity<FlightSchedule>()
+                .HasKey(fs => new { fs.FlightCode, fs.EmployeeID });
+
+            // Composite Key for Rating
+            modelBuilder.Entity<Rating>()
+                .HasKey(r => new { r.RaterID, r.RateeID });
+
         }
     }
 }

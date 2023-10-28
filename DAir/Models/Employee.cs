@@ -1,4 +1,6 @@
-﻿namespace DAir.Models
+﻿
+
+namespace DAir.Models
 {
     public class Employee
     {

@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DAir.Models;
 using DAir.Context;
-using System.Collections.Generic;
+using DAir.Models;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,11 +25,12 @@ namespace DAir.Controllers
             return await _context.Ratings.ToListAsync();
         }
 
-        // GET: api/Ratings/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Rating>> GetRating(int id)
+        // GET: api/Ratings/5/10
+        [HttpGet("{raterId}/{rateeId}")]
+        public async Task<ActionResult<Rating>> GetRating(int raterId, int rateeId)
         {
-            var rating = await _context.Ratings.FindAsync(id);
+            var rating = await _context.Ratings
+                .FirstOrDefaultAsync(r => r.RaterID == raterId && r.RateeID == rateeId);
 
             if (rating == null)
             {
@@ -47,14 +47,14 @@ namespace DAir.Controllers
             _context.Ratings.Add(rating);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRating", new { id = rating.PilotID }, rating);
+            return CreatedAtAction("GetRating", new { raterId = rating.RaterID, rateeId = rating.RateeID }, rating);
         }
 
-        // PUT: api/Ratings/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutRating(int id, Rating rating)
+        // PUT: api/Ratings/5/10
+        [HttpPut("{raterId}/{rateeId}")]
+        public async Task<IActionResult> PutRating(int raterId, int rateeId, Rating rating)
         {
-            if (id != rating.PilotID)
+            if (raterId != rating.RaterID || rateeId != rating.RateeID)
             {
                 return BadRequest();
             }
@@ -67,7 +67,7 @@ namespace DAir.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!RatingExists(id))
+                if (!RatingExists(raterId, rateeId))
                 {
                     return NotFound();
                 }
@@ -80,11 +80,13 @@ namespace DAir.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Ratings/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRating(int id)
+        // DELETE: api/Ratings/5/10
+        [HttpDelete("{raterId}/{rateeId}")]
+        public async Task<IActionResult> DeleteRating(int raterId, int rateeId)
         {
-            var rating = await _context.Ratings.FindAsync(id);
+            var rating = await _context.Ratings
+                .FirstOrDefaultAsync(r => r.RaterID == raterId && r.RateeID == rateeId);
+
             if (rating == null)
             {
                 return NotFound();
@@ -96,9 +98,9 @@ namespace DAir.Controllers
             return NoContent();
         }
 
-        private bool RatingExists(int id)
+        private bool RatingExists(int raterId, int rateeId)
         {
-            return _context.Ratings.Any(e => e.PilotID == id);
+            return _context.Ratings.Any(r => r.RaterID == raterId && r.RateeID == rateeId);
         }
     }
 }

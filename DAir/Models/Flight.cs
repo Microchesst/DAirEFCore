@@ -1,7 +1,10 @@
-﻿namespace DAir.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DAir.Models
 {
     public class Flight
     {
+        [Key]
         public string FlightCode { get; set; }
         public string DepartureAirport { get; set; }
         public string ArrivalAirport { get; set; }

@@ -11,5 +11,6 @@
         // Navigation properties
         public Employee Employee { get; set; }
         public ICollection<Rating> RatingsReceived { get; set; }
+
     }
 }

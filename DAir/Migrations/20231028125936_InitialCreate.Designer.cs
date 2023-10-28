@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAir.Migrations
 {
     [DbContext(typeof(DAirDbContext))]
-    [Migration("20231028123429_InitialCreate")]
+    [Migration("20231028125936_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

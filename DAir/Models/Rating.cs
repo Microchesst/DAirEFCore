@@ -14,8 +14,6 @@
         public int RateeID { get; set; } // Foreign key property (type should match Pilot's primary key)
         public Pilot Ratee { get; set; } // Navigation property
 
-
-
         // Navigation properties
         public Pilot Pilot { get; set; }
         public Employee Employee { get; set; }

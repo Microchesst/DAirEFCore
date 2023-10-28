@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAir.Migrations
 {
     [DbContext(typeof(DAirDbContext))]
-    [Migration("20231028125936_InitialCreate")]
+    [Migration("20231028175904_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -125,11 +125,11 @@ namespace DAir.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<TimeSpan>("ScheduledArrivalTime")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("ScheduledArrivalTime")
+                        .HasColumnType("datetime2");
 
-                    b.Property<TimeSpan>("ScheduledDepartureTime")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("ScheduledDepartureTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("State")
                         .IsRequired()

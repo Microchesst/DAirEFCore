@@ -33,8 +33,8 @@ namespace DAir.Migrations
                     FlightCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DepartureAirport = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ArrivalAirport = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ScheduledDepartureTime = table.Column<TimeSpan>(type: "time", nullable: false),
-                    ScheduledArrivalTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    ScheduledDepartureTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ScheduledArrivalTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AircraftID = table.Column<int>(type: "int", nullable: false),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },

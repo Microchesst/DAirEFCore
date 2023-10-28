@@ -34,4 +34,12 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
+// Seed the database
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<DAirDbContext>();
+    DbInitializer.Initialize(context); // Replace with your actual initializer method
+}
+
 app.Run();

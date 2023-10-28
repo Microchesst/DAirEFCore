@@ -79,7 +79,21 @@ namespace DAir.Controllers
 
             return NoContent();
         }
+        // GET: api/Flight/GetFlightInfo/SK935
+        [HttpGet("GetFlightInfo/{flightCode}")]
+        public async Task<ActionResult<Flight>> GetFlightInfo(string flightCode)
+        {
+            var flight = await _context.Flights
+                .Where(f => f.FlightCode == flightCode)
+                .FirstOrDefaultAsync();
 
+            if (flight == null)
+            {
+                return NotFound();
+            }
+
+            return flight;
+        }
         // DELETE: api/Flight/5
         [HttpDelete("{flightCode}")]
         public async Task<IActionResult> DeleteFlight(string flightCode)

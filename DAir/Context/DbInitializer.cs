@@ -1,7 +1,7 @@
 ﻿using DAir.Models;
-using System; // For DateTime
-using System.Collections.Generic; // For List support
-using System.Linq; // For checking if the context already contains data
+using System;
+using System.Collections.Generic; 
+using System.Linq; 
 
 namespace DAir.Context
 {

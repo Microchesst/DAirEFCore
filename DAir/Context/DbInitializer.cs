@@ -105,10 +105,11 @@ namespace DAir.Context
             var ratings = new List<Rating>
             {
                 new Rating { Rater = employees[0], Ratee = pilots[1], RatingValue = 4 },
+                new Rating { Rater = employees[0], Ratee = pilots[0], RatingValue = 3 },
                 new Rating { Rater = employees[3], Ratee = pilots[0], RatingValue = 5 },
                 // ... more ratings as needed
                 new Rating { Rater = employees[5], Ratee = pilots[2], RatingValue = 3 },
-                new Rating { Rater = employees[6], Ratee = pilots[1], RatingValue = 4 },
+                new Rating { Rater = employees[6], Ratee = pilots[1], RatingValue = 1 },
                 // ... more ratings for robust data
             };
             context.Ratings.AddRange(ratings);

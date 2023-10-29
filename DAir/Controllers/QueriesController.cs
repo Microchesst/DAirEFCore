@@ -102,6 +102,7 @@ namespace DAir.Controllers
         {
             var pilot = await _context.Pilots
                 .Include(p => p.Employee)
+                .Include(p => p.RatingsReceived)
                 .Where(p => p.Employee.FirstName + " " + p.Employee.LastName == pilotName)
                 .FirstOrDefaultAsync();
 
@@ -110,13 +111,13 @@ namespace DAir.Controllers
                 return NotFound("Pilot not found.");
             }
 
-            var averageRating = await _context.Ratings
-                .Where(r => r.RateeID == pilot.PilotID)
+            var averageRating = pilot.RatingsReceived
                 .DefaultIfEmpty()
-                .AverageAsync(r => r == null ? 0 : r.RatingValue);
+                .Average(r => r == null ? 0 : r.RatingValue);
 
             return averageRating;
         }
+
 
         // 6. Languages Spoken by a Cabin Crew Member
         [HttpGet("GetLanguagesByCrewMember/{crewMemberName}")]

@@ -9,16 +9,9 @@ namespace DAir.Context
     {
         public static void Initialize(DAirDbContext context)
         {
+            context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
-            // Clear existing data (Reseeding)
-            context.Languages.RemoveRange(context.Languages);
-            context.CabinMembers.RemoveRange(context.CabinMembers);
-            context.Pilots.RemoveRange(context.Pilots);
-            context.Employees.RemoveRange(context.Employees);
-            context.Flights.RemoveRange(context.Flights);
-            context.FlightSchedules.RemoveRange(context.FlightSchedules);
-            context.Ratings.RemoveRange(context.Ratings);
 
             // Check if the database has been seeded already
             if (context.Employees.Any())
@@ -82,9 +75,9 @@ namespace DAir.Context
             // Flights
             var flights = new List<Flight>
             {
-                new Flight { FlightCode = "SK935", DepartureAirport = "CPH", ArrivalAirport = "SFO", ScheduledDepartureTime = new DateTime(2023, 10, 10, 16, 15, 0), ScheduledArrivalTime = new DateTime(2023, 10, 10, 18, 35, 0), State = "Scheduled" },
-                new Flight { FlightCode = "LH123", DepartureAirport = "SFO", ArrivalAirport = "CPH", ScheduledDepartureTime = new DateTime(2023, 10, 11, 10, 0, 0), ScheduledArrivalTime = new DateTime(2023, 10, 11, 14, 30, 0), State = "Canceled" },
-                new Flight { FlightCode = "BA456", DepartureAirport = "CPH", ArrivalAirport = "LHR", ScheduledDepartureTime = new DateTime(2023, 10, 12, 9, 0, 0), ScheduledArrivalTime = new DateTime(2023, 10, 12, 11, 20, 0), State = "Delayed" },
+                new Flight { FlightCode = "SK935", DepartureAirport = "CPH", ArrivalAirport = "SFO", ScheduledDepartureTime = new DateTime(2023, 10, 10, 16, 15, 0).ToString("ddMMyyyy HHmm"), ScheduledArrivalTime = new DateTime(2023, 10, 10, 18, 35, 0).ToString("ddMMyyyy HHmm"), State = "Scheduled" },
+                new Flight { FlightCode = "LH123", DepartureAirport = "SFO", ArrivalAirport = "CPH", ScheduledDepartureTime = new DateTime(2023, 10, 11, 10, 0, 0).ToString("ddMMyyyy HHmm"), ScheduledArrivalTime = new DateTime(2023, 10, 11, 14, 30, 0).ToString("ddMMyyyy HHmm"), State = "Canceled" },
+                new Flight { FlightCode = "BA456", DepartureAirport = "CPH", ArrivalAirport = "LHR", ScheduledDepartureTime = new DateTime(2023, 10, 12, 9, 0, 0).ToString("ddMMyyyy HHmm"), ScheduledArrivalTime = new DateTime(2023, 10, 12, 11, 20, 0).ToString("ddMMyyyy HHmm"), State = "Delayed" },
                 // ... more flights as needed
             };
             context.Flights.AddRange(flights);

@@ -9,7 +9,7 @@ namespace DAir.Context
     {
         public static void Initialize(DAirDbContext context)
         {
-            context.Database.EnsureDeleted();
+            //context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
 
@@ -106,6 +106,20 @@ namespace DAir.Context
                 // ... more ratings for robust data
             };
             context.Ratings.AddRange(ratings);
+
+            // Certifications
+            var certifications = new List<Certification>
+            {
+                new Certification { CertificationName = "Airbus 350", LicenseNumber = 22, PilotID = 1 }
+            };
+            context.Certifications.AddRange(certifications);
+
+            // Conflicts
+            var conflicts = new List<Conflict>
+            {
+                new Conflict { PilotID = 1, EmployeeID = 2}
+            };
+            context.Conflicts.AddRange(conflicts);
 
             context.SaveChanges();
         }

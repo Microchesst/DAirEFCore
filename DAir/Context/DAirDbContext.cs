@@ -14,6 +14,10 @@ namespace DAir.Context
         public DbSet<Crew> Crews { get; set; }
         public DbSet<Flight> Flights { get; set; }
         public DbSet<FlightSchedule> FlightSchedules { get; set; }
+        public DbSet<Certification> Certifications { get; set; }
+        public DbSet<Conflict> Conflicts { get; set; }
+
+
 
         public DAirDbContext(DbContextOptions<DAirDbContext> options) : base(options)
         {

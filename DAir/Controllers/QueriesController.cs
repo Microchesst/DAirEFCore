@@ -47,19 +47,20 @@ namespace DAir.Controllers
         [HttpGet("GetCrewMembersForAircraftAtAirport/{aircraftType}/{airport}")]
         public async Task<ActionResult<List<string>>> GetCrewMembersForAircraftAtAirport(string aircraftType, string airport)
         {
-            var pilots = await _context.Pilots
-                .Where(p => p.Certification == aircraftType && p.GeoLocation == airport)
-                .Select(p => p.Employee.FirstName + " " + p.Employee.LastName)
-                .ToListAsync();
+            var query = from pilot in _context.Pilots
+                        join certification in _context.Certifications
+                        on pilot.PilotID equals certification.PilotID
+                        where pilot.GeoLocation == airport && certification.CertificationName == aircraftType
+                        select new
+                        {
+                            Name = pilot.Employee.FirstName + " " + pilot.Employee.LastName,
+                            aircraftTypeName = aircraftType,
+                            LicenseNumber = certification.LicenseNumber
+                        };
 
-            var cabinMembers = await _context.CabinMembers
-                .Where(cm => cm.Certification == aircraftType && cm.GeoLocation == airport)
-                .Select(cm => cm.Employee.FirstName + " " + cm.Employee.LastName)
-                .ToListAsync();
+            var crewMembers = await query.ToListAsync();
 
-            var crewMembers = pilots.Concat(cabinMembers).Distinct().ToList();
-
-            return crewMembers;
+            return Ok(crewMembers);
         }
 
         // 3. Count of Canceled Flights
@@ -103,24 +104,40 @@ namespace DAir.Controllers
 
         // 5. Average Rating Given by a Pilot
         [HttpGet("GetAverageRatingByPilot/{pilotName}")]
-        public async Task<ActionResult<double>> GetAverageRatingByPilot(string pilotName)
+        public async Task<ActionResult<List<string>>> GetAverageRatingByPilot(string pilotName)
         {
-            var pilot = await _context.Pilots
-                .Include(p => p.Employee)
-                .Include(p => p.RatingsReceived)
-                .Where(p => p.Employee.FirstName + " " + p.Employee.LastName == pilotName)
+            // Find the EmployeeID of the given employee name
+            int? employeeId = await _context.Employees
+                .Where(e => e.FirstName + " " + e.LastName == pilotName)
+                .Select(e => e.EmployeeID)
                 .FirstOrDefaultAsync();
 
-            if (pilot == null)
+            if (employeeId.HasValue)
             {
-                return NotFound("Pilot not found.");
+                // Find the corresponding PilotID in the Pilots table
+                int? pilotId = await _context.Pilots
+                    .Where(p => p.EmployeeID == employeeId)
+                    .Select(p => p.PilotID)
+                    .FirstOrDefaultAsync();
+
+                if (pilotId.HasValue)
+                {
+                    // List all EmployeeIDs associated with the PilotID in the Conflict table
+                    List<int> employeeIds = await _context.Conflicts
+                        .Where(c => c.PilotID == pilotId)
+                        .Select(c => c.EmployeeID)
+                        .ToListAsync();
+
+                    // Get the names of employees with the retrieved IDs
+                    List<string> employeeNames = await _context.Employees
+                        .Where(e => employeeIds.Contains(e.EmployeeID))
+                        .Select(e => e.FirstName + " " + e.LastName)
+                        .ToListAsync();
+                    return employeeNames;
+                }
+                else return NotFound("Pilot not found.");
             }
-
-            var averageRating = pilot.RatingsReceived
-                .DefaultIfEmpty()
-                .Average(r => r == null ? 0 : r.RatingValue);
-
-            return averageRating;
+            else { return NotFound("Pilot not found with that name."); }
         }
 
 

@@ -3,6 +3,7 @@ using DAir.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAir.Migrations
 {
     [DbContext(typeof(DAirDbContext))]
-    partial class DAirDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231030100147_Migration2")]
+    partial class Migration2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,29 +48,6 @@ namespace DAir.Migrations
                     b.HasIndex("EmployeeID");
 
                     b.ToTable("CabinMembers");
-                });
-
-            modelBuilder.Entity("DAir.Models.Certification", b =>
-                {
-                    b.Property<int>("CertificationID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CertificationID"));
-
-                    b.Property<string>("CertificationName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("LicenseNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PilotID")
-                        .HasColumnType("int");
-
-                    b.HasKey("CertificationID");
-
-                    b.ToTable("Certifications");
                 });
 
             modelBuilder.Entity("DAir.Models.Crew", b =>

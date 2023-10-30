@@ -72,13 +72,18 @@ namespace DAir.Controllers
             return canceledFlightsCount;
         }
 
-        // 4. Flight Schedule per Employee by Airport - Simplified
-        [HttpGet("GetFlightScheduleByEmployee")]
-        public async Task<ActionResult<IEnumerable<EmployeeFlightSchedule>>> GetFlightScheduleByEmployee()
+        // 4. Flight Schedule per Employee by Airport - Filtered by Employee Name
+        [HttpGet("GetFlightScheduleByEmployee/{employeeName}")]
+        public async Task<ActionResult<IEnumerable<EmployeeFlightSchedule>>> GetFlightScheduleByEmployee(string employeeName)
         {
+            var nameParts = employeeName.Split(' ');
+            var firstName = nameParts[0];
+            var lastName = nameParts.Length > 1 ? nameParts[1] : "";
+
             var flightSchedules = await _context.FlightSchedules
                 .Include(fs => fs.Employee)
                 .Include(fs => fs.Flight)
+                .Where(fs => fs.Employee.FirstName == firstName && fs.Employee.LastName == lastName)
                 .GroupBy(fs => new { fs.Employee.FirstName, fs.Employee.LastName, fs.Flight.DepartureAirport })
                 .Select(group => new EmployeeFlightSchedule
                 {
@@ -86,12 +91,12 @@ namespace DAir.Controllers
                     Airport = group.Key.DepartureAirport,
                     FlightCount = group.Count()
                 })
-                .OrderBy(efs => efs.EmployeeName)
-                .ThenBy(efs => efs.Airport)
+                .OrderBy(efs => efs.Airport)
                 .ToListAsync();
 
             return flightSchedules;
         }
+
 
 
 

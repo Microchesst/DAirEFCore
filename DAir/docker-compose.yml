@@ -1,28 +1,23 @@
-﻿version: '3.4'
+﻿version: '3.8'
 
 services:
   dair:
-    image: DAir.Web:latest
+    image: dair_web:latest
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - sql1
     ports:
       - "8080:80"
-    networks:
-      - dairnetwork
 
   sql1:
-    image: mcr.microsoft.com/mssql/server
+    image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
       SA_PASSWORD: "BadMand120@"
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
-    networks:
-      - dairnetwork
 
-networks:
-  dairnetwork:
-    driver: bridge

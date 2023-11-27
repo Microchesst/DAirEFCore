@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using DAir.Context; // Replace with your actual DbContext's namespace
 using DAir.Models; // Replace with your actual Models' namespace
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,12 @@ builder.Services.AddDbContext<DAirDbContext>(options =>
 
 // Add Controllers
 builder.Services.AddControllers();
+
+// Configure Serilog
+builder.Host.UseSerilog((context, config) =>
+{
+    config.ReadFrom.Configuration(context.Configuration);
+});
 
 // Add Swagger
 builder.Services.AddSwaggerGen(c =>

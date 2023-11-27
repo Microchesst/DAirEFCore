@@ -10,6 +10,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - sql1
+      - mongodb 
     ports:
       - "8080:80"
 
@@ -21,3 +22,11 @@ services:
     ports:
       - "1433:1433"
 
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+volumes:
+  mongodb-data:

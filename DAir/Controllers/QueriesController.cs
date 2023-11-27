@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace DAir.Controllers
 {
 
+
     // Additional class definition for EmployeeFlightSchedule
     public class EmployeeFlightSchedule
     {
@@ -21,28 +22,42 @@ namespace DAir.Controllers
     public class QueriesController : ControllerBase
     {
         private readonly DAirDbContext _context;
+        private readonly ILogger<QueriesController> _logger;
 
-        public QueriesController(DAirDbContext context)
+
+        public QueriesController(DAirDbContext context, ILogger<QueriesController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
-        // Add your query methods here
-        // Example: Get flight details by flight code
         [HttpGet("GetFlightDetails/{flightCode}")]
         public async Task<ActionResult<Flight>> GetFlightDetails(string flightCode)
         {
-            var flight = await _context.Flights
-                .Where(f => f.FlightCode == flightCode)
-                .FirstOrDefaultAsync();
-
-            if (flight == null)
+            try
             {
-                return NotFound();
-            }
+                _logger.LogInformation("Request to get flight details for {FlightCode}", flightCode);
 
-            return flight;
+                var flight = await _context.Flights
+                    .Where(f => f.FlightCode == flightCode)
+                    .FirstOrDefaultAsync();
+
+                if (flight == null)
+                {
+                    _logger.LogWarning("Flight not found for {FlightCode}", flightCode);
+                    return NotFound();
+                }
+
+                _logger.LogInformation("Flight details retrieved for {FlightCode}", flightCode);
+                return flight;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting flight details for {FlightCode}", flightCode);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred processing your request.");
+            }
         }
+
         // 2. Crew Members Available for Specific Aircraft at an Airport
         [HttpGet("GetCrewMembersForAircraftAtAirport/{aircraftType}/{airport}")]
         public async Task<ActionResult<List<string>>> GetCrewMembersForAircraftAtAirport(string aircraftType, string airport)

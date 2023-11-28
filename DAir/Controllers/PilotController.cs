@@ -5,6 +5,7 @@ using DAir.Context;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DAir.Controllers
 {
@@ -21,6 +22,7 @@ namespace DAir.Controllers
 
         // GET: api/Pilots
         [HttpGet]
+        [Authorize(Policy = "adminPolicy")]
         public async Task<ActionResult<IEnumerable<Pilot>>> GetPilots()
         {
             return await _context.Pilots.ToListAsync();

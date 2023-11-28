@@ -1,7 +1,11 @@
 ﻿using DAir.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic; 
-using System.Linq; 
+using System.Linq;
+using System.Security.Claims;
+using IdentityResult = Microsoft.AspNetCore.Identity.IdentityResult;
 
 namespace DAir.Context
 {
@@ -121,7 +125,34 @@ namespace DAir.Context
             };
             context.Conflicts.AddRange(conflicts);
 
-            context.SaveChanges();
+                context.SaveChanges();
         }
+
+        public static void SeedUsers(Microsoft.AspNetCore.Identity.UserManager<ApiUser> userManager)
+        {
+            const string adminEmail = "Admin@localhost";
+            const string adminPassword = "SecretSecret7$";
+
+            if (userManager == null)
+                throw new ArgumentNullException(nameof(userManager));
+
+            if (userManager.FindByNameAsync(adminEmail).Result == null)
+            {
+                var user = new ApiUser(); 
+                user.UserName = adminEmail;
+                user.Email = adminEmail;
+                user.EmailConfirmed = true;
+
+                IdentityResult result = userManager.CreateAsync(user, adminPassword).Result;
+
+                if (result.Succeeded)
+                {
+                    var adminUser = userManager.FindByNameAsync(adminEmail).Result;
+                    var claim = new Claim("admin", "true");
+                    var claimAdded = userManager.AddClaimAsync(adminUser, claim).Result;
+                }
+            }
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DAir.Context;
 using DAir.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace DAir.Controllers
     }
 
     [Route("api/[controller]")]
+    [Authorize(Policy = "adminPolicy")]
     [ApiController]
     public class QueriesController : ControllerBase
     {

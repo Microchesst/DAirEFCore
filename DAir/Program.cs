@@ -69,7 +69,6 @@ builder.Host.UseSerilog((context, config) =>
     config.ReadFrom.Configuration(context.Configuration);
 });
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
@@ -85,12 +84,17 @@ app.MapControllers();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Seed the database
+// Apply EF Core Migrations and Seed the Database
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<DAirDbContext>();
-    DbInitializer.Initialize(context); // Replace with your actual initializer method
+    var dbContext = services.GetRequiredService<DAirDbContext>();
+
+    // Apply migrations (this will apply any pending migrations)
+    dbContext.Database.Migrate();
+
+    // Seed the database
+    DbInitializer.Initialize(dbContext); 
 
     // seed admin user 
     var userManager = services.GetService<UserManager<ApiUser>>();

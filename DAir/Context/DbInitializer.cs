@@ -121,7 +121,7 @@ namespace DAir.Context
             // Conflicts
             var conflicts = new List<Conflict>
             {
-                new Conflict { PilotID = 1, EmployeeID = 3, Description = "he stinks" }
+                new Conflict { PilotID = 1, EmployeeID = 3 }
             };
             context.Conflicts.AddRange(conflicts);
 

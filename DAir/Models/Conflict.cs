@@ -7,6 +7,6 @@
         public int PilotID { get; set; }
         public int EmployeeID { get; set; }
 
-        public string Description { get; set; } // Added property for conflict description
+        //public string Description { get; set; } // Added property for conflict description
     }
 }

@@ -5,6 +5,7 @@ using DAir.Context;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace DAir.Controllers
 {
@@ -13,16 +14,19 @@ namespace DAir.Controllers
     public class ConflictsController : ControllerBase
     {
         private readonly DAirDbContext _context;
+        private readonly ILogger<ConflictsController> _logger;
 
-        public ConflictsController(DAirDbContext context)
+        public ConflictsController(DAirDbContext context, ILogger<ConflictsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/Conflicts
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Conflict>>> GetConflicts()
         {
+            _logger.LogInformation("Request received for GetConflicts");
             return await _context.Conflicts.ToListAsync();
         }
 
@@ -30,10 +34,12 @@ namespace DAir.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Conflict>> GetConflict(int id)
         {
+            _logger.LogInformation("Request received for GetConflict with ID: {Id}", id);
             var conflict = await _context.Conflicts.FindAsync(id);
 
             if (conflict == null)
             {
+                _logger.LogWarning("Conflict not found with ID: {Id}", id);
                 return NotFound();
             }
 
@@ -44,18 +50,21 @@ namespace DAir.Controllers
         [HttpPost]
         public async Task<ActionResult<Conflict>> PostConflict(Conflict conflict)
         {
+            _logger.LogInformation("Request received for PostConflict");
             _context.Conflicts.Add(conflict);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetConflict", new { id = conflict.ConflictID }, conflict);
+            return CreatedAtAction(nameof(GetConflict), new { id = conflict.ConflictID }, conflict);
         }
 
         // PUT: api/Conflicts/1
         [HttpPut("{id}")]
         public async Task<IActionResult> PutConflict(int id, Conflict conflict)
         {
+            _logger.LogInformation("Request received for PutConflict with ID: {Id}", id);
             if (id != conflict.ConflictID)
             {
+                _logger.LogWarning("PutConflict received mismatched ID");
                 return BadRequest();
             }
 
@@ -65,14 +74,16 @@ namespace DAir.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 if (!ConflictExists(id))
                 {
+                    _logger.LogWarning("Conflict not found during update with ID: {Id}", id);
                     return NotFound();
                 }
                 else
                 {
+                    _logger.LogError(ex, "Error occurred during PutConflict");
                     throw;
                 }
             }
@@ -80,21 +91,23 @@ namespace DAir.Controllers
             return NoContent();
         }
 
-
         // DELETE: api/Conflicts/1
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteConflict(int id)
         {
+            _logger.LogInformation("Request received for DeleteConflict with ID: {Id}", id);
             var conflict = await _context.Conflicts.FindAsync(id);
 
             if (conflict == null)
             {
+                _logger.LogWarning("Conflict not found for deletion with ID: {Id}", id);
                 return NotFound();
             }
 
             _context.Conflicts.Remove(conflict);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Conflict deleted with ID: {Id}", id);
             return NoContent();
         }
 

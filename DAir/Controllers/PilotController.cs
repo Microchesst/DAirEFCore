@@ -16,8 +16,6 @@ namespace DAir.Controllers
     public class PilotsController : ControllerBase
     {
         private readonly DAirDbContext _context;
-
-        // Inject Serilog's ILogger into the controller
         private readonly ILogger<PilotsController> _logger;
 
         public PilotsController(DAirDbContext context, ILogger<PilotsController> logger)
@@ -31,6 +29,7 @@ namespace DAir.Controllers
         [Authorize(Policy = "adminPolicy")]
         public async Task<ActionResult<IEnumerable<Pilot>>> GetPilots()
         {
+            _logger.LogInformation("Request received for GetPilots");
             return await _context.Pilots.ToListAsync();
         }
 
@@ -38,10 +37,12 @@ namespace DAir.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Pilot>> GetPilot(int id)
         {
+            _logger.LogInformation("Request received for GetPilot with ID: {Id}", id);
             var pilot = await _context.Pilots.FindAsync(id);
 
             if (pilot == null)
             {
+                _logger.LogWarning("Pilot not found with ID: {Id}", id);
                 return NotFound();
             }
 
@@ -52,9 +53,11 @@ namespace DAir.Controllers
         [HttpPost]
         public async Task<ActionResult<Pilot>> PostPilot(Pilot pilot)
         {
+            _logger.LogInformation("Request received for PostPilot");
             _context.Pilots.Add(pilot);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Pilot created with ID: {PilotID}", pilot.PilotID);
             return CreatedAtAction("GetPilot", new { id = pilot.PilotID }, pilot);
         }
 
@@ -62,23 +65,20 @@ namespace DAir.Controllers
         [HttpPost("{id}/Ratings")]
         public async Task<ActionResult<Rating>> PostRating(int id, Rating rating)
         {
+            _logger.LogInformation("Request received for PostRating for Pilot ID: {Id}", id);
             var pilot = await _context.Pilots.FindAsync(id);
 
             if (pilot == null)
             {
+                _logger.LogWarning("Pilot not found for rating with ID: {Id}", id);
                 return NotFound("Pilot not found");
             }
 
-            // Set the ratee ID
             rating.RateeID = id;
-
             _context.Ratings.Add(rating);
             await _context.SaveChangesAsync();
 
-            // Log the POST request to MongoDB using Serilog
-            _logger.LogInformation("Rating added for Pilot ID {PilotID} by Rater ID {RaterID}", rating.RateeID, rating.RaterID);
-
-
+            _logger.LogInformation("Rating added for Pilot ID: {RateeID} by Rater ID: {RaterID}", rating.RateeID, rating.RaterID);
             return CreatedAtAction("GetRating", new { raterId = rating.RaterID, rateeId = rating.RateeID }, rating);
         }
 
@@ -86,8 +86,10 @@ namespace DAir.Controllers
         [HttpPut("{id}/Ratings/{raterId}")]
         public async Task<IActionResult> PutRating(int id, int raterId, Rating rating)
         {
+            _logger.LogInformation("Request received for PutRating for Pilot ID: {Id} by Rater ID: {RaterId}", id, raterId);
             if (id != rating.RateeID || raterId != rating.RaterID)
             {
+                _logger.LogWarning("PutRating received mismatched data");
                 return BadRequest("Invalid rating data");
             }
 
@@ -96,21 +98,19 @@ namespace DAir.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-
-                // Log the PUT request to MongoDB using Serilog
-                _logger.LogInformation("Rating added for Pilot ID {PilotID} by Rater ID {RaterID}", rating.RateeID, rating.RaterID);
-
-
+                _logger.LogInformation("Rating updated for Pilot ID: {RateeID} by Rater ID: {RaterID}", rating.RateeID, rating.RaterID);
                 return NoContent();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 if (!RatingExists(raterId, id))
                 {
+                    _logger.LogWarning("Rating not found for Pilot ID: {Id} and Rater ID: {RaterId}", id, raterId);
                     return NotFound("Rating not found");
                 }
                 else
                 {
+                    _logger.LogError(ex, "Error occurred during PutRating");
                     throw;
                 }
             }
@@ -120,19 +120,19 @@ namespace DAir.Controllers
         [HttpDelete("{id}/Ratings/{raterId}")]
         public async Task<IActionResult> DeleteRating(int id, int raterId)
         {
+            _logger.LogInformation("Request received for DeleteRating for Pilot ID: {Id} by Rater ID: {RaterId}", id, raterId);
             var rating = _context.Ratings.FirstOrDefault(r => r.RateeID == id && r.RaterID == raterId);
 
             if (rating == null)
             {
+                _logger.LogWarning("Rating not found for deletion for Pilot ID: {Id} and Rater ID: {RaterId}", id, raterId);
                 return NotFound("Rating not found");
             }
 
             _context.Ratings.Remove(rating);
             await _context.SaveChangesAsync();
 
-            // Log the DELETE request to MongoDB using Serilog
-            _logger.LogInformation("Rating deleted for Pilot ID {PilotID} by Rater ID {RaterID}", rating.RateeID, rating.RaterID);
-
+            _logger.LogInformation("Rating deleted for Pilot ID: {RateeID} by Rater ID: {RaterID}", rating.RateeID, rating.RaterID);
             return NoContent();
         }
 
@@ -140,8 +140,10 @@ namespace DAir.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPilot(int id, Pilot pilot)
         {
+            _logger.LogInformation("Request received for PutPilot with ID: {Id}", id);
             if (id != pilot.PilotID)
             {
+                _logger.LogWarning("PutPilot received mismatched ID for ID: {Id}", id);
                 return BadRequest();
             }
 
@@ -150,35 +152,40 @@ namespace DAir.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                _logger.LogInformation("Pilot updated with ID: {PilotID}", pilot.PilotID);
+                return NoContent();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 if (!PilotExists(id))
                 {
+                    _logger.LogWarning("Pilot not found for update with ID: {Id}", id);
                     return NotFound();
                 }
                 else
                 {
+                    _logger.LogError(ex, "Error occurred during PutPilot");
                     throw;
                 }
             }
-
-            return NoContent();
         }
 
         // DELETE: api/Pilots/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePilot(int id)
         {
+            _logger.LogInformation("Request received for DeletePilot with ID: {Id}", id);
             var pilot = await _context.Pilots.FindAsync(id);
             if (pilot == null)
             {
+                _logger.LogWarning("Pilot not found for deletion with ID: {Id}", id);
                 return NotFound();
             }
 
             _context.Pilots.Remove(pilot);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Pilot deleted with ID: {PilotID}", pilot.PilotID);
             return NoContent();
         }
 
@@ -191,6 +198,5 @@ namespace DAir.Controllers
         {
             return _context.Pilots.Any(e => e.PilotID == id);
         }
-
     }
 }

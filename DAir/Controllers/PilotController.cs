@@ -80,7 +80,6 @@ namespace DAir.Controllers
 
 
             return CreatedAtAction("GetRating", new { raterId = rating.RaterID, rateeId = rating.RateeID }, rating);
-
         }
 
         // PUT: api/Pilots/{id}/Ratings/{raterId}

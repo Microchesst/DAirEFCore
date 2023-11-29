@@ -27,7 +27,7 @@ builder.Services.AddIdentity<ApiUser, IdentityRole>(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("adminPolicy", policyBuilder => 
+    options.AddPolicy("adminPolicy", policyBuilder =>
         policyBuilder.RequireClaim("admin", "true"));
 });
 
@@ -65,13 +65,9 @@ builder.Services.AddSwaggerGen(options =>
 
 // Configure Serilog
 builder.Host.UseSerilog((context, config) =>
-    {
-        config.ReadFrom.Configuration(context.Configuration);
-    })
-    .UseSerilog((context, services, loggerConfiguration) => loggerConfiguration
-        .WriteTo.MongoDB(context.Configuration.GetSection("Serilog:WriteTo:MongoDB").Value));
-
-
+{
+    config.ReadFrom.Configuration(context.Configuration);
+});
 
 
 var app = builder.Build();

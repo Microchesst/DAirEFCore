@@ -5,11 +5,13 @@ using DAir.Context;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DAir.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Crew")] // Restrict access to Cabin Crew
     public class LanguagesController : ControllerBase
     {
         private readonly DAirDbContext _context;

@@ -65,9 +65,13 @@ builder.Services.AddSwaggerGen(options =>
 
 // Configure Serilog
 builder.Host.UseSerilog((context, config) =>
-{
-    config.ReadFrom.Configuration(context.Configuration);
-});
+    {
+        config.ReadFrom.Configuration(context.Configuration);
+    })
+    .UseSerilog((context, services, loggerConfiguration) => loggerConfiguration
+        .WriteTo.MongoDB(context.Configuration.GetSection("Serilog:WriteTo:MongoDB").Value));
+
+
 
 
 var app = builder.Build();

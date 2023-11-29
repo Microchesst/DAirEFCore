@@ -46,6 +46,11 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<DAirDbContext>();
+
+    // Apply pending migrations
+    context.Database.Migrate();
+
+    // Initialize the database (seed data, etc.)
     DbInitializer.Initialize(context); // Replace with your actual initializer method
 }
 

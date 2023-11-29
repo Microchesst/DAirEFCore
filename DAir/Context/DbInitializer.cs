@@ -121,11 +121,11 @@ namespace DAir.Context
             // Conflicts
             var conflicts = new List<Conflict>
             {
-                new Conflict { PilotID = 1, EmployeeID = 2}
+                new Conflict { PilotID = 1, EmployeeID = 3, Description = "he stinks" }
             };
             context.Conflicts.AddRange(conflicts);
 
-                context.SaveChanges();
+            context.SaveChanges();
         }
 
         public static void SeedUsers(Microsoft.AspNetCore.Identity.UserManager<ApiUser> userManager)

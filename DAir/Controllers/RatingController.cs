@@ -20,9 +20,20 @@ namespace DAir.Controllers
 
         // GET: api/Ratings
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Rating>>> GetRatings()
+        public async Task<ActionResult<IEnumerable<object>>> GetRatings()
         {
-            return await _context.Ratings.ToListAsync();
+            // Retrieve information about whether a pilot has given a rating to an employee
+            var pilotRatingsInfo = await _context.Ratings
+                .Where(r => _context.Pilots.Any(p => p.PilotID == r.RaterID))
+                .Select(r => new
+                {
+                    RaterID = r.RaterID,
+                    RateeID = r.RateeID
+                    // Add other relevant information if needed
+                })
+                .ToListAsync();
+
+            return pilotRatingsInfo;
         }
 
         // GET: api/Ratings/5/10
@@ -44,11 +55,15 @@ namespace DAir.Controllers
         [HttpPost]
         public async Task<ActionResult<Rating>> PostRating(Rating rating)
         {
+            // Remove the RatingValue property from the model if you don't want to require a score
+            rating.RatingValue = 0;  // You can set it to a default value or remove this line
+
             _context.Ratings.Add(rating);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetRating", new { raterId = rating.RaterID, rateeId = rating.RateeID }, rating);
         }
+
 
         // PUT: api/Ratings/5/10
         [HttpPut("{raterId}/{rateeId}")]

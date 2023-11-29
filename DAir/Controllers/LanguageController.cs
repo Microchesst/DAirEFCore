@@ -55,15 +55,23 @@ namespace DAir.Controllers
         }
 
         // PUT: api/Languages/5
-        [HttpPut("{cabinMemberID}")]
-        public async Task<IActionResult> PutLanguages(int cabinMemberID, Languages languages)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutLanguages(int id, [FromBody] Languages languagesUpdate)
         {
-            if (cabinMemberID != languages.CabinMemberID)
+            if (id != languagesUpdate.ID)
             {
                 return BadRequest();
             }
 
-            _context.Entry(languages).State = EntityState.Modified;
+            var language = await _context.Languages.FindAsync(id);
+
+            if (language == null)
+            {
+                return NotFound();
+            }
+
+            // Update only the properties that need to be updated
+            language.Language = languagesUpdate.Language;
 
             try
             {
@@ -71,7 +79,7 @@ namespace DAir.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!LanguagesExist(cabinMemberID))
+                if (!LanguagesExist(id))
                 {
                     return NotFound();
                 }

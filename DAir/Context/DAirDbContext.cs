@@ -19,6 +19,7 @@ namespace DAir.Context
         public DbSet<Certification> Certifications { get; set; }
         public DbSet<Conflict> Conflicts { get; set; }
         public DbSet<ApiUser> ApiUsers { get; set; }
+        public DbSet<Dialect> Dialects { get; set; }
 
 
 

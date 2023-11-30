@@ -8,7 +8,6 @@ namespace DAir.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "crewPolicy")]
 
     public class CrewController : ControllerBase
     {

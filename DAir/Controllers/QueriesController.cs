@@ -1,5 +1,6 @@
 ﻿using DAir.Context;
 using DAir.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace DAir.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class QueriesController : ControllerBase
     {
         private readonly DAirDbContext _context;

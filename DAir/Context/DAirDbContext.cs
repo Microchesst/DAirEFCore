@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using DAir.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
 
 namespace DAir.Context
 {
-    public class DAirDbContext : DbContext
+    public class DAirDbContext : IdentityDbContext<ApiUser>
     {
         // DbSet properties
         public DbSet<Employee> Employees { get; set; }
@@ -16,6 +18,8 @@ namespace DAir.Context
         public DbSet<FlightSchedule> FlightSchedules { get; set; }
         public DbSet<Certification> Certifications { get; set; }
         public DbSet<Conflict> Conflicts { get; set; }
+        public DbSet<ApiUser> ApiUsers { get; set; }
+
 
 
 
@@ -25,6 +29,8 @@ namespace DAir.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             // Employee and Pilot
             modelBuilder.Entity<Employee>()
                 .HasMany(e => e.Pilots)

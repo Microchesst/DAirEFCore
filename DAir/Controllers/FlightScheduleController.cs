@@ -5,6 +5,7 @@ using DAir.Context;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace DAir.Controllers
 {
@@ -13,16 +14,23 @@ namespace DAir.Controllers
     public class FlightSchedulesController : ControllerBase
     {
         private readonly DAirDbContext _context;
+        private readonly ILogger<FlightSchedulesController> _logger;
 
-        public FlightSchedulesController(DAirDbContext context)
+        public FlightSchedulesController(DAirDbContext context, ILogger<FlightSchedulesController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/FlightSchedules
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FlightSchedule>>> GetFlightSchedules()
         {
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
             return await _context.FlightSchedules.ToListAsync();
         }
 
@@ -30,11 +38,16 @@ namespace DAir.Controllers
         [HttpGet("{flightCode}")]
         public async Task<ActionResult<FlightSchedule>> GetFlightSchedule(string flightCode)
         {
-            var flightSchedule = await _context.FlightSchedules
-                .FirstOrDefaultAsync(fs => fs.FlightCode == flightCode);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
+            var flightSchedule = await _context.FlightSchedules.FirstOrDefaultAsync(fs => fs.FlightCode == flightCode);
 
             if (flightSchedule == null)
             {
+                _logger.LogWarning("FlightSchedule not found with FlightCode: {FlightCode}", flightCode);
                 return NotFound();
             }
 
@@ -45,18 +58,29 @@ namespace DAir.Controllers
         [HttpPost]
         public async Task<ActionResult<FlightSchedule>> PostFlightSchedule(FlightSchedule flightSchedule)
         {
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Post", Timestamp = timestamp };
+
+            _logger.LogInformation("Post called {@Loginfo} ", logInfo);
+
             _context.FlightSchedules.Add(flightSchedule);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetFlightSchedule", new { flightCode = flightSchedule.FlightCode }, flightSchedule);
+            return CreatedAtAction(nameof(GetFlightSchedule), new { flightCode = flightSchedule.FlightCode }, flightSchedule);
         }
 
         // PUT: api/FlightSchedules/ABC123
         [HttpPut("{flightCode}")]
         public async Task<IActionResult> PutFlightSchedule(string flightCode, FlightSchedule flightSchedule)
         {
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Put", Timestamp = timestamp };
+
+            _logger.LogInformation("Put called {@Loginfo} ", logInfo);
+
             if (flightCode != flightSchedule.FlightCode)
             {
+                _logger.LogWarning("PutFlightSchedule received mismatched FlightCode");
                 return BadRequest();
             }
 
@@ -66,14 +90,16 @@ namespace DAir.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 if (!FlightScheduleExists(flightCode))
                 {
+                    _logger.LogWarning("FlightSchedule not found during update with FlightCode: {FlightCode}", flightCode);
                     return NotFound();
                 }
                 else
                 {
+                    _logger.LogError(ex, "Error occurred during PutFlightSchedule");
                     throw;
                 }
             }
@@ -85,16 +111,23 @@ namespace DAir.Controllers
         [HttpDelete("{flightCode}")]
         public async Task<IActionResult> DeleteFlightSchedule(string flightCode)
         {
-            var flightSchedule = await _context.FlightSchedules
-                .FirstOrDefaultAsync(fs => fs.FlightCode == flightCode);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Delete", Timestamp = timestamp };
+
+            _logger.LogInformation("Delete called {@Loginfo} ", logInfo);
+
+            var flightSchedule = await _context.FlightSchedules.FirstOrDefaultAsync(fs => fs.FlightCode == flightCode);
+
             if (flightSchedule == null)
             {
+                _logger.LogWarning("FlightSchedule not found for deletion with FlightCode: {FlightCode}", flightCode);
                 return NotFound();
             }
 
             _context.FlightSchedules.Remove(flightSchedule);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("FlightSchedule deleted with FlightCode: {FlightCode}", flightCode);
             return NoContent();
         }
 

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace DAir.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Policy = "pilotPolicy")]
     [ApiController]
 
     public class CrewController : ControllerBase

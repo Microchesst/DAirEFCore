@@ -22,7 +22,6 @@ namespace DAir.Controllers
 
         // GET: api/Pilots
         [HttpGet]
-        [Authorize(Policy = "adminPolicy")]
         public async Task<ActionResult<IEnumerable<Pilot>>> GetPilots()
         {
             return await _context.Pilots.ToListAsync();

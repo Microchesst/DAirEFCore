@@ -19,8 +19,8 @@ namespace DAir.Controllers
     }
 
     [Route("api/[controller]")]
-    [Authorize(Policy = "adminPolicy")]
     [ApiController]
+    [Authorize]
     public class QueriesController : ControllerBase
     {
         private readonly DAirDbContext _context;

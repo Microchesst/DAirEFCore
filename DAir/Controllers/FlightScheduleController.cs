@@ -42,7 +42,7 @@ namespace DAir.Controllers
             var logInfo = new { Operation = "Get", Timestamp = timestamp };
 
             _logger.LogInformation("Get called {@Loginfo} ", logInfo);
-            
+
             var flightSchedule = await _context.FlightSchedules.FirstOrDefaultAsync(fs => fs.FlightCode == flightCode);
 
             if (flightSchedule == null)
@@ -77,7 +77,7 @@ namespace DAir.Controllers
             var logInfo = new { Operation = "Put", Timestamp = timestamp };
 
             _logger.LogInformation("Put called {@Loginfo} ", logInfo);
-            
+
             if (flightCode != flightSchedule.FlightCode)
             {
                 _logger.LogWarning("PutFlightSchedule received mismatched FlightCode");
@@ -115,7 +115,7 @@ namespace DAir.Controllers
             var logInfo = new { Operation = "Delete", Timestamp = timestamp };
 
             _logger.LogInformation("Delete called {@Loginfo} ", logInfo);
-            
+
             var flightSchedule = await _context.FlightSchedules.FirstOrDefaultAsync(fs => fs.FlightCode == flightCode);
 
             if (flightSchedule == null)

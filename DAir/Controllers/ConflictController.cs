@@ -26,6 +26,7 @@ namespace DAir.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Conflict>>> GetConflicts()
         {
+
             var timestamp = new DateTimeOffset(DateTime.UtcNow);
             var logInfo = new { Operation = "Get", Timestamp = timestamp };
 
@@ -115,6 +116,7 @@ namespace DAir.Controllers
             var logInfo = new { Operation = "Delete", Timestamp = timestamp };
 
             _logger.LogInformation("Delete called {@Loginfo} ", logInfo);
+            
             var conflict = await _context.Conflicts.FindAsync(id);
 
             if (conflict == null)

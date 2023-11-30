@@ -6,6 +6,8 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,10 +33,37 @@ builder.Services.AddIdentity<ApiUser, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<DAirDbContext>();
 
+builder.Services.AddAuthentication(options => {
+    options.DefaultAuthenticateScheme =
+    options.DefaultChallengeScheme =
+    options.DefaultForbidScheme =
+    options.DefaultScheme =
+    options.DefaultSignInScheme =
+    options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options => {
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidateAudience = false,
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+    System.Text.Encoding.UTF8.GetBytes("MyVeryOwnTestSigningKey123$"))
+    };
+});
+
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("adminPolicy", policyBuilder =>
         policyBuilder.RequireClaim("admin", "true"));
+
+    options.AddPolicy("pilotPolicy", policyBuilder =>
+    policyBuilder.RequireClaim("pilot", "true"));
+
+    options.AddPolicy("crewPolicy", policyBuilder =>
+    policyBuilder.RequireClaim("crew", "true"));
 });
 
 // Add Controllers
@@ -86,14 +115,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.MapControllers();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 
 // Apply EF Core Migrations and Seed the Database
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+
     var dbContext = services.GetRequiredService<DAirDbContext>();
 
     // Apply migrations (this will apply any pending migrations)

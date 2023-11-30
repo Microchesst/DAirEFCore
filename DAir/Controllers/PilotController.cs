@@ -11,6 +11,8 @@ namespace DAir.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "pilotPolicy")]
+
     public class PilotsController : ControllerBase
     {
         private readonly DAirDbContext _context;

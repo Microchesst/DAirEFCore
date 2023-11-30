@@ -50,8 +50,14 @@ builder.Services.AddAuthentication(options => {
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("adminPolicy", policyBuilder => 
+    options.AddPolicy("adminPolicy", policyBuilder =>
         policyBuilder.RequireClaim("admin", "true"));
+
+    options.AddPolicy("pilotPolicy", policyBuilder =>
+    policyBuilder.RequireClaim("pilot", "true"));
+
+    options.AddPolicy("crewPolicy", policyBuilder =>
+    policyBuilder.RequireClaim("crew", "true"));
 });
 
 // Add Controllers

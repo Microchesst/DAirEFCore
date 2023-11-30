@@ -2,11 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using DAir.Context;
 using DAir.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DAir.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "crewPolicy")]
+
     public class CrewController : ControllerBase
     {
         private readonly DAirDbContext _context;

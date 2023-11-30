@@ -148,13 +148,6 @@ namespace DAir.Controllers
                         throw new Exception("Invalid login attempt.");
                     else
                     {
-                        // OBS: this should be used instead but signingkey results in null..
-
-                        //var signingCredentials = new SigningCredentials(
-                        //        new SymmetricSecurityKey(
-                        //        System.Text.Encoding.UTF8.GetBytes(_configuration["JWT:SigningKey"])),
-                        //        SecurityAlgorithms.HmacSha256);
-
                         var signingCredentials = new SigningCredentials(
                                 new SymmetricSecurityKey(
                                 System.Text.Encoding.UTF8.GetBytes("MyVeryOwnTestSigningKey123$")),
@@ -163,15 +156,9 @@ namespace DAir.Controllers
                         var claims = new List<Claim>();
                         claims.Add(new Claim(ClaimTypes.Name, user.UserName));
 
-                        // Check if the user has the "admin" claim
-                        var adminClaim = (await _userManager.GetClaimsAsync(user))
-                            .FirstOrDefault(c => c.Type == "admin" && c.Value == "true");
-
-                        if (adminClaim != null)
-                        {
-                            // Add the "admin" claim to the claims list
-                            claims.Add(adminClaim);
-                        }
+                        await CheckAndAddClaimAsync(claims, user, "admin");
+                        await CheckAndAddClaimAsync(claims, user, "pilot");
+                        await CheckAndAddClaimAsync(claims, user, "crew");
 
                         var jwtObject = new JwtSecurityToken(
                                 issuer: _configuration["JWT:Issuer"],
@@ -203,6 +190,18 @@ namespace DAir.Controllers
                 "https:/ /tools.ietf.org/html/rfc7231#section-6.6.1";
                 return StatusCode(
                     StatusCodes.Status401Unauthorized, exceptionDetails);
+            }
+        }
+
+
+        async Task CheckAndAddClaimAsync(List<Claim> claims, DAir.Models.ApiUser user, string claimType)
+        {
+            var claim = (await _userManager.GetClaimsAsync(user))
+                .FirstOrDefault(c => c.Type == claimType && c.Value == "true");
+
+            if (claim != null)
+            {
+                claims.Add(claim);
             }
         }
     }

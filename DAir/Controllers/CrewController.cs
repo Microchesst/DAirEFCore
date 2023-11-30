@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using DAir.Context;
 using DAir.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DAir.Controllers
 {

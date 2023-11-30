@@ -2,6 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using DAir.Context;
 using DAir.Models;
+
+using Serilog;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
 namespace DAir.Controllers

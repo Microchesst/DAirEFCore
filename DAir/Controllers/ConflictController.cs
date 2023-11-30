@@ -26,7 +26,12 @@ namespace DAir.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Conflict>>> GetConflicts()
         {
-            _logger.LogInformation("Request received for GetConflicts");
+
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
             return await _context.Conflicts.ToListAsync();
         }
 
@@ -34,7 +39,11 @@ namespace DAir.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Conflict>> GetConflict(int id)
         {
-            _logger.LogInformation("Request received for GetConflict with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
             var conflict = await _context.Conflicts.FindAsync(id);
 
             if (conflict == null)
@@ -50,7 +59,11 @@ namespace DAir.Controllers
         [HttpPost]
         public async Task<ActionResult<Conflict>> PostConflict(Conflict conflict)
         {
-            _logger.LogInformation("Request received for PostConflict");
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Post", Timestamp = timestamp };
+
+            _logger.LogInformation("Post called {@Loginfo} ", logInfo);
+
             _context.Conflicts.Add(conflict);
             await _context.SaveChangesAsync();
 
@@ -61,7 +74,11 @@ namespace DAir.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutConflict(int id, Conflict conflict)
         {
-            _logger.LogInformation("Request received for PutConflict with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Put", Timestamp = timestamp };
+
+            _logger.LogInformation("Put called {@Loginfo} ", logInfo);
+
             if (id != conflict.ConflictID)
             {
                 _logger.LogWarning("PutConflict received mismatched ID");
@@ -95,7 +112,11 @@ namespace DAir.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteConflict(int id)
         {
-            _logger.LogInformation("Request received for DeleteConflict with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Delete", Timestamp = timestamp };
+
+            _logger.LogInformation("Delete called {@Loginfo} ", logInfo);
+            
             var conflict = await _context.Conflicts.FindAsync(id);
 
             if (conflict == null)

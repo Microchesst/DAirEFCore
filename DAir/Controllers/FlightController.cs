@@ -30,7 +30,7 @@ namespace DAir.Controllers
             var logInfo = new { Operation = "Get", Timestamp = timestamp };
 
             _logger.LogInformation("Get called {@Loginfo} ", logInfo);
-
+            
             return await _context.Flights.ToListAsync();
         }
 

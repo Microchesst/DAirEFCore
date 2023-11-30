@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using DAir.Context; // Replace with your actual DbContext's namespace
-using DAir.Models; // Replace with your actual Models' namespace
+using DAir.Models;
+using DAir.Services; // Replace with your actual Models' namespace
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +12,11 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
+
+builder.Services.Configure<LogsDatabaseSettings>(
+    builder.Configuration.GetSection("LogDatabase"));
+
+builder.Services.AddSingleton<LogService>();
 
 // Add DbContext
 builder.Services.AddDbContext<DAirDbContext>(options =>
@@ -98,7 +104,6 @@ builder.Host.UseSerilog((context, config) =>
     config.ReadFrom.Configuration(context.Configuration);
 });
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
@@ -114,17 +119,18 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// Seed the database
+// Apply EF Core Migrations and Seed the Database
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<DAirDbContext>();
 
-    // Apply pending migrations
-    context.Database.Migrate();
+    var dbContext = services.GetRequiredService<DAirDbContext>();
 
-    // Initialize the database (seed data, etc.)
-    DbInitializer.Initialize(context); // Replace with your actual initializer method
+    // Apply migrations (this will apply any pending migrations)
+    dbContext.Database.Migrate();
+
+    // Seed the database
+    DbInitializer.Initialize(dbContext); 
 
     // seed admin user 
     var userManager = services.GetService<UserManager<ApiUser>>();

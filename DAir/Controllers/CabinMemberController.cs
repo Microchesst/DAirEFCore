@@ -26,7 +26,11 @@ namespace DAir.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CabinMember>>> GetCabinMembers()
         {
-            _logger.LogInformation("Request received for GetCabinMembers");
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
             return await _context.CabinMembers.ToListAsync();
         }
 
@@ -34,7 +38,10 @@ namespace DAir.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CabinMember>> GetCabinMember(int id)
         {
-            _logger.LogInformation("Request received for GetCabinMember with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
 
             var cabinMember = await _context.CabinMembers.FirstOrDefaultAsync(cm => cm.CabinMemberID == id);
 
@@ -51,7 +58,11 @@ namespace DAir.Controllers
         [HttpPost]
         public async Task<ActionResult<CabinMember>> PostCabinMember(CabinMember cabinMember)
         {
-            _logger.LogInformation("Request received for PostCabinMember");
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Post", Timestamp = timestamp };
+
+            _logger.LogInformation("Post called {@Loginfo} ", logInfo);
+
             _context.CabinMembers.Add(cabinMember);
             await _context.SaveChangesAsync();
 
@@ -62,7 +73,11 @@ namespace DAir.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCabinMember(int id, CabinMember cabinMember)
         {
-            _logger.LogInformation("Request received for PutCabinMember with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Put", Timestamp = timestamp };
+
+            _logger.LogInformation("Put called {@Loginfo} ", logInfo);
+
 
             if (id != cabinMember.CabinMemberID)
             {
@@ -97,7 +112,10 @@ namespace DAir.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCabinMember(int id)
         {
-            _logger.LogInformation("Request received for DeleteCabinMember with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Delete", Timestamp = timestamp };
+
+            _logger.LogInformation("Delete called {@Loginfo} ", logInfo);
 
             var cabinMember = await _context.CabinMembers.FirstOrDefaultAsync(cm => cm.CabinMemberID == id);
 

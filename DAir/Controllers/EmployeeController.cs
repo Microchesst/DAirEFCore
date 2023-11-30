@@ -26,7 +26,11 @@ namespace DAir.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
         {
-            _logger.LogInformation("Request received for GetEmployees");
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
             return await _context.Employees.ToListAsync();
         }
 
@@ -34,7 +38,11 @@ namespace DAir.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
-            _logger.LogInformation("Request received for GetEmployee with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
             var employee = await _context.Employees
                 .Include(e => e.Pilots)
                 .Include(e => e.CabinMembers)
@@ -55,7 +63,11 @@ namespace DAir.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmployee(int id, Employee employee)
         {
-            _logger.LogInformation("Request received for PutEmployee with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Put", Timestamp = timestamp };
+
+            _logger.LogInformation("Put called {@Loginfo} ", logInfo);
+
             if (id != employee.EmployeeID)
             {
                 _logger.LogWarning("PutEmployee received mismatched ID");
@@ -89,7 +101,11 @@ namespace DAir.Controllers
         [HttpPost]
         public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
         {
-            _logger.LogInformation("Request received for PostEmployee");
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Post", Timestamp = timestamp };
+
+            _logger.LogInformation("Post called {@Loginfo} ", logInfo);
+
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
 
@@ -100,12 +116,15 @@ namespace DAir.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
-            _logger.LogInformation("Request received for DeleteEmployee with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Delete", Timestamp = timestamp };
+
+            _logger.LogInformation("Delete called {@Loginfo} ", logInfo);
+
             var employee = await _context.Employees.FindAsync(id);
 
             if (employee == null)
             {
-                _logger.LogWarning("Employee not found for deletion with ID: {Id}", id);
                 return NotFound();
             }
 

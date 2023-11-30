@@ -29,7 +29,11 @@ namespace DAir.Controllers
         [Authorize(Policy = "adminPolicy")]
         public async Task<ActionResult<IEnumerable<Pilot>>> GetPilots()
         {
-            _logger.LogInformation("Request received for GetPilots");
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
             return await _context.Pilots.ToListAsync();
         }
 
@@ -37,12 +41,15 @@ namespace DAir.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Pilot>> GetPilot(int id)
         {
-            _logger.LogInformation("Request received for GetPilot with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
             var pilot = await _context.Pilots.FindAsync(id);
 
             if (pilot == null)
             {
-                _logger.LogWarning("Pilot not found with ID: {Id}", id);
                 return NotFound();
             }
 
@@ -53,11 +60,14 @@ namespace DAir.Controllers
         [HttpPost]
         public async Task<ActionResult<Pilot>> PostPilot(Pilot pilot)
         {
-            _logger.LogInformation("Request received for PostPilot");
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Post", Timestamp = timestamp };
+
+            _logger.LogInformation("Post called {@Loginfo} ", logInfo);
+
             _context.Pilots.Add(pilot);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Pilot created with ID: {PilotID}", pilot.PilotID);
             return CreatedAtAction("GetPilot", new { id = pilot.PilotID }, pilot);
         }
 
@@ -65,12 +75,15 @@ namespace DAir.Controllers
         [HttpPost("{id}/Ratings")]
         public async Task<ActionResult<Rating>> PostRating(int id, Rating rating)
         {
-            _logger.LogInformation("Request received for PostRating for Pilot ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Post", Timestamp = timestamp };
+
+            _logger.LogInformation("Post called {@Loginfo} ", logInfo);
+
             var pilot = await _context.Pilots.FindAsync(id);
 
             if (pilot == null)
             {
-                _logger.LogWarning("Pilot not found for rating with ID: {Id}", id);
                 return NotFound("Pilot not found");
             }
 
@@ -78,7 +91,6 @@ namespace DAir.Controllers
             _context.Ratings.Add(rating);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Rating added for Pilot ID: {RateeID} by Rater ID: {RaterID}", rating.RateeID, rating.RaterID);
             return CreatedAtAction("GetRating", new { raterId = rating.RaterID, rateeId = rating.RateeID }, rating);
         }
 
@@ -86,7 +98,11 @@ namespace DAir.Controllers
         [HttpPut("{id}/Ratings/{raterId}")]
         public async Task<IActionResult> PutRating(int id, int raterId, Rating rating)
         {
-            _logger.LogInformation("Request received for PutRating for Pilot ID: {Id} by Rater ID: {RaterId}", id, raterId);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Put", Timestamp = timestamp };
+
+            _logger.LogInformation("Put called {@Loginfo} ", logInfo);
+
             if (id != rating.RateeID || raterId != rating.RaterID)
             {
                 _logger.LogWarning("PutRating received mismatched data");
@@ -120,7 +136,11 @@ namespace DAir.Controllers
         [HttpDelete("{id}/Ratings/{raterId}")]
         public async Task<IActionResult> DeleteRating(int id, int raterId)
         {
-            _logger.LogInformation("Request received for DeleteRating for Pilot ID: {Id} by Rater ID: {RaterId}", id, raterId);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Delete", Timestamp = timestamp };
+
+            _logger.LogInformation("Delete called {@Loginfo} ", logInfo);
+
             var rating = _context.Ratings.FirstOrDefault(r => r.RateeID == id && r.RaterID == raterId);
 
             if (rating == null)
@@ -140,7 +160,11 @@ namespace DAir.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPilot(int id, Pilot pilot)
         {
-            _logger.LogInformation("Request received for PutPilot with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Put", Timestamp = timestamp };
+
+            _logger.LogInformation("Put called {@Loginfo} ", logInfo);
+
             if (id != pilot.PilotID)
             {
                 _logger.LogWarning("PutPilot received mismatched ID for ID: {Id}", id);
@@ -174,7 +198,11 @@ namespace DAir.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePilot(int id)
         {
-            _logger.LogInformation("Request received for DeletePilot with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Delete", Timestamp = timestamp };
+
+            _logger.LogInformation("Delete called {@Loginfo} ", logInfo);
+
             var pilot = await _context.Pilots.FindAsync(id);
             if (pilot == null)
             {

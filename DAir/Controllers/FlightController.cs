@@ -26,7 +26,11 @@ namespace DAir.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Flight>>> GetFlights()
         {
-            _logger.LogInformation("Request received for GetFlights");
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+            
             return await _context.Flights.ToListAsync();
         }
 
@@ -34,7 +38,11 @@ namespace DAir.Controllers
         [HttpGet("{flightCode}")]
         public async Task<ActionResult<Flight>> GetFlight(string flightCode)
         {
-            _logger.LogInformation("Request received for GetFlight with FlightCode: {FlightCode}", flightCode);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
             var flight = await _context.Flights.FirstOrDefaultAsync(f => f.FlightCode == flightCode);
 
             if (flight == null)
@@ -50,7 +58,11 @@ namespace DAir.Controllers
         [HttpPost]
         public async Task<ActionResult<Flight>> PostFlight(Flight flight)
         {
-            _logger.LogInformation("Request received for PostFlight");
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Post", Timestamp = timestamp };
+
+            _logger.LogInformation("Post called {@Loginfo} ", logInfo);
+
             _context.Flights.Add(flight);
             await _context.SaveChangesAsync();
 
@@ -61,7 +73,11 @@ namespace DAir.Controllers
         [HttpPut("{flightCode}")]
         public async Task<IActionResult> PutFlight(string flightCode, Flight flight)
         {
-            _logger.LogInformation("Request received for PutFlight with FlightCode: {FlightCode}", flightCode);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Put", Timestamp = timestamp };
+
+            _logger.LogInformation("Put called {@Loginfo} ", logInfo);
+
             if (flightCode != flight.FlightCode)
             {
                 _logger.LogWarning("PutFlight received mismatched FlightCode");
@@ -95,7 +111,11 @@ namespace DAir.Controllers
         [HttpGet("GetFlightInfo/{flightCode}")]
         public async Task<ActionResult<Flight>> GetFlightInfo(string flightCode)
         {
-            _logger.LogInformation("Request received for GetFlightInfo with FlightCode: {FlightCode}", flightCode);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
             var flight = await _context.Flights.Where(f => f.FlightCode == flightCode).FirstOrDefaultAsync();
 
             if (flight == null)
@@ -111,7 +131,11 @@ namespace DAir.Controllers
         [HttpDelete("{flightCode}")]
         public async Task<IActionResult> DeleteFlight(string flightCode)
         {
-            _logger.LogInformation("Request received for DeleteFlight with FlightCode: {FlightCode}", flightCode);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Delete", Timestamp = timestamp };
+
+            _logger.LogInformation("Delete called {@Loginfo} ", logInfo);
+
             var flight = await _context.Flights.FirstOrDefaultAsync(f => f.FlightCode == flightCode);
 
             if (flight == null)

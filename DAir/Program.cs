@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using DAir.Context; // Replace with your actual DbContext's namespace
-using DAir.Models; // Replace with your actual Models' namespace
+using DAir.Models;
+using DAir.Services; // Replace with your actual Models' namespace
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +10,11 @@ using Microsoft.AspNetCore.Authorization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
+
+builder.Services.Configure<LogsDatabaseSettings>(
+    builder.Configuration.GetSection("LogDatabase"));
+
+builder.Services.AddSingleton<LogService>();
 
 // Add DbContext
 builder.Services.AddDbContext<DAirDbContext>(options =>

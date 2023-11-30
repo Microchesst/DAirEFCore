@@ -40,7 +40,10 @@ namespace DAir.Controllers
         {
             try
             {
-                _logger.LogInformation("Request to get flight details for {FlightCode}", flightCode);
+                var timestamp = new DateTimeOffset(DateTime.UtcNow);
+                var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+                _logger.LogInformation("Get called {@Loginfo} ", logInfo);
 
                 var flight = await _context.Flights
                     .Where(f => f.FlightCode == flightCode)
@@ -51,13 +54,10 @@ namespace DAir.Controllers
                     _logger.LogWarning("Flight not found for {FlightCode}", flightCode);
                     return NotFound();
                 }
-
-                _logger.LogInformation("Flight details retrieved for {FlightCode}", flightCode);
                 return flight;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting flight details for {FlightCode}", flightCode);
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred processing your request.");
             }
         }
@@ -67,7 +67,10 @@ namespace DAir.Controllers
         {
             try
             {
-                _logger.LogInformation("Request to get crew members for {AircraftType} at {Airport}", aircraftType, airport);
+                var timestamp = new DateTimeOffset(DateTime.UtcNow);
+                var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+                _logger.LogInformation("Get called {@Loginfo} ", logInfo);
 
                 var query = from pilot in _context.Pilots
                             join certification in _context.Certifications
@@ -82,12 +85,10 @@ namespace DAir.Controllers
 
                 var crewMembers = await query.ToListAsync();
 
-                _logger.LogInformation("Crew members retrieved for {AircraftType} at {Airport}", aircraftType, airport);
                 return Ok(crewMembers);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting crew members for {AircraftType} at {Airport}", aircraftType, airport);
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred processing your request.");
             }
         }
@@ -97,17 +98,18 @@ namespace DAir.Controllers
         {
             try
             {
-                _logger.LogInformation("Request to get the count of canceled flights");
+                var timestamp = new DateTimeOffset(DateTime.UtcNow);
+                var logInfo = new { Operation = "Get" , Timestamp = timestamp};
+
+                _logger.LogInformation("Get called {@Loginfo} ", logInfo);
 
                 int canceledFlightsCount = await _context.Flights
                     .CountAsync(f => f.State == "Canceled");
 
-                _logger.LogInformation("Count of canceled flights retrieved: {Count}", canceledFlightsCount);
                 return canceledFlightsCount;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting the count of canceled flights");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred processing your request.");
             }
         }
@@ -117,7 +119,10 @@ namespace DAir.Controllers
         {
             try
             {
-                _logger.LogInformation("Request to get flight schedule by employee for {EmployeeName}", employeeName);
+                var timestamp = new DateTimeOffset(DateTime.UtcNow);
+                var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+                _logger.LogInformation("Get called {@Loginfo} ", logInfo);
 
                 var nameParts = employeeName.Split(' ');
                 var firstName = nameParts[0];
@@ -137,12 +142,10 @@ namespace DAir.Controllers
                     .OrderBy(efs => efs.Airport)
                     .ToListAsync();
 
-                _logger.LogInformation("Flight schedule retrieved for {EmployeeName}", employeeName);
                 return flightSchedules;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting flight schedule for {EmployeeName}", employeeName);
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred processing your request.");
             }
         }
@@ -153,7 +156,10 @@ namespace DAir.Controllers
         {
             try
             {
-                _logger.LogInformation("Request to get the average rating for pilot: {PilotName}", pilotName);
+                var timestamp = new DateTimeOffset(DateTime.UtcNow);
+                var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+                _logger.LogInformation("Get called {@Loginfo} ", logInfo);
 
                 // Find the EmployeeID of the given employee name
                 int? employeeId = await _context.Employees
@@ -177,24 +183,20 @@ namespace DAir.Controllers
                             .Select(r => r.RatingValue)
                             .AverageAsync();
 
-                        _logger.LogInformation("Average rating retrieved for pilot: {PilotName}, Average Rating: {AverageRating}", pilotName, averageRating);
-                        return averageRating;
+                         return averageRating;
                     }
                     else
                     {
-                        _logger.LogWarning("Pilot not found for name: {PilotName}", pilotName);
                         return NotFound("Pilot not found.");
                     }
                 }
                 else
                 {
-                    _logger.LogWarning("Pilot not found with name: {PilotName}", pilotName);
                     return NotFound("Pilot not found with that name.");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting average rating for pilot: {PilotName}", pilotName);
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred processing your request.");
             }
         }
@@ -205,7 +207,10 @@ namespace DAir.Controllers
         {
             try
             {
-                _logger.LogInformation("Request to get languages spoken by cabin crew member: {CrewMemberName}", crewMemberName);
+                var timestamp = new DateTimeOffset(DateTime.UtcNow);
+                var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+                _logger.LogInformation("Get called {@Loginfo} ", logInfo);
 
                 var crewMemberLanguages = await _context.CabinMembers
                     .Include(cm => cm.Employee)
@@ -215,12 +220,10 @@ namespace DAir.Controllers
                     .Select(l => l.Language)
                     .ToListAsync();
 
-                _logger.LogInformation("Languages retrieved for cabin crew member: {CrewMemberName}", crewMemberName);
                 return crewMemberLanguages;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting languages for cabin crew member: {CrewMemberName}", crewMemberName);
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred processing your request.");
             }
         }

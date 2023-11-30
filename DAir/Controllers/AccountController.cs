@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using NuGet.Packaging.Signing;
 
 namespace DAir.Controllers
 {
@@ -39,6 +40,11 @@ namespace DAir.Controllers
         [Authorize(Policy = "adminPolicy")]
         public async Task<ActionResult> Register(RegisterDTO input)
         {
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Post", Timestamp = timestamp };
+
+            _logger.LogInformation("Post called {@Loginfo} ", logInfo);
+
             try
             {
                 if (ModelState.IsValid)
@@ -89,6 +95,11 @@ namespace DAir.Controllers
         [Authorize(Policy = "adminPolicy")]
         public async Task<ActionResult> AssignClaimToUser(string userEmail, string role)
         {
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Post", Timestamp = timestamp };
+
+            _logger.LogInformation("Post called {@Loginfo} ", logInfo);
+
             try
             {
                 // Find the user by email
@@ -139,6 +150,11 @@ namespace DAir.Controllers
         [HttpPost]
         public async Task<ActionResult> Login(LoginDTO input)
         {
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Post", Timestamp = timestamp };
+
+            _logger.LogInformation("Post called {@Loginfo} ", logInfo);
+
             try
             {
                 if (ModelState.IsValid)

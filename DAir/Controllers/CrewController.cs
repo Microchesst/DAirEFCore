@@ -26,7 +26,10 @@ namespace DAir.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Crew>>> GetCrews()
         {
-            _logger.LogInformation("Request received for GetCrews");
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
             return await _context.Crews.ToListAsync();
         }
 
@@ -34,7 +37,11 @@ namespace DAir.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Crew>> GetCrew(int id)
         {
-            _logger.LogInformation("Request received for GetCrew with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
             var crew = await _context.Crews.FindAsync(id);
 
             if (crew == null)
@@ -50,7 +57,11 @@ namespace DAir.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCrew(int id, Crew crew)
         {
-            _logger.LogInformation("Request received for PutCrew with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Put", Timestamp = timestamp };
+
+            _logger.LogInformation("Put called {@Loginfo} ", logInfo);
+
             if (id != crew.CrewID)
             {
                 _logger.LogWarning("PutCrew received mismatched ID");
@@ -84,7 +95,11 @@ namespace DAir.Controllers
         [HttpPost]
         public async Task<ActionResult<Crew>> PostCrew(Crew crew)
         {
-            _logger.LogInformation("Request received for PostCrew");
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Post", Timestamp = timestamp };
+
+            _logger.LogInformation("Post called {@Loginfo} ", logInfo);
+
             _context.Crews.Add(crew);
             await _context.SaveChangesAsync();
 
@@ -95,7 +110,11 @@ namespace DAir.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCrew(int id)
         {
-            _logger.LogInformation("Request received for DeleteCrew with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Delete", Timestamp = timestamp };
+
+            _logger.LogInformation("Delete called {@Loginfo} ", logInfo);
+
             var crew = await _context.Crews.FindAsync(id);
 
             if (crew == null)

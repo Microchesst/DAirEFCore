@@ -28,7 +28,11 @@ namespace DAir.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Languages>>> GetLanguages()
         {
-            _logger.LogInformation("Request received for GetLanguages");
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
             return await _context.Languages.ToListAsync();
         }
 
@@ -36,7 +40,11 @@ namespace DAir.Controllers
         [HttpGet("{cabinMemberID}")]
         public async Task<ActionResult<IEnumerable<Languages>>> GetLanguagesForCabinMember(int cabinMemberID)
         {
-            _logger.LogInformation("Request received for GetLanguagesForCabinMember with ID: {CabinMemberID}", cabinMemberID);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Get", Timestamp = timestamp };
+
+            _logger.LogInformation("Get called {@Loginfo} ", logInfo);
+
             var languages = await _context.Languages.Where(l => l.CabinMemberID == cabinMemberID).ToListAsync();
 
             if (languages == null || languages.Count == 0)
@@ -52,7 +60,11 @@ namespace DAir.Controllers
         [HttpPost]
         public async Task<ActionResult<Languages>> PostLanguages(Languages languages)
         {
-            _logger.LogInformation("Request received for PostLanguages");
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Post", Timestamp = timestamp };
+
+            _logger.LogInformation("Post called {@Loginfo} ", logInfo);
+
             _context.Languages.Add(languages);
             await _context.SaveChangesAsync();
 
@@ -63,7 +75,11 @@ namespace DAir.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLanguages(int id, [FromBody] Languages languagesUpdate)
         {
-            _logger.LogInformation("Request received for PutLanguages with ID: {Id}", id);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Put", Timestamp = timestamp };
+
+            _logger.LogInformation("Put called {@Loginfo} ", logInfo);
+
             if (id != languagesUpdate.ID)
             {
                 _logger.LogWarning("PutLanguages received mismatched ID");
@@ -105,7 +121,11 @@ namespace DAir.Controllers
         [HttpDelete("{cabinMemberID}")]
         public async Task<IActionResult> DeleteLanguages(int cabinMemberID)
         {
-            _logger.LogInformation("Request received for DeleteLanguages with CabinMemberID: {CabinMemberID}", cabinMemberID);
+            var timestamp = new DateTimeOffset(DateTime.UtcNow);
+            var logInfo = new { Operation = "Delete", Timestamp = timestamp };
+
+            _logger.LogInformation("Delete called {@Loginfo} ", logInfo);
+
             var languages = await _context.Languages.Where(l => l.CabinMemberID == cabinMemberID).ToListAsync();
 
             if (languages == null || languages.Count == 0)
